@@ -1,11 +1,11 @@
 version: '3'
 services:
-  project1:
+  ProductMS:
     build: ./ProductMicroService
     ports:
       - "8090:8080" # Map container port 80 to host port 8080
 
-  project2:
+  OfferMS:
     build: ./OfferMicroService
     ports:
       - "8081:8080" # Map container port 80 to host port 8081
