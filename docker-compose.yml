@@ -1,11 +1,44 @@
-version: '3'
+version: "3.9"
 services:
-  ProductMS:
-    build: ./ProductMicroService
+
+  discovery:
+    container_name: discovery
+    build: ./EurekaServer
     ports:
-      - "8090:8080" # Map container port 80 to host port 8080
+      - "8761:8761"
+    image: "discovery-service"
 
   OfferMS:
+    container_name: offer
     build: ./OfferMicroService
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
     ports:
-      - "8081:8080" # Map container port 80 to host port 8081
+      - "8081:8081"
+    image: "offer"
+    depends_on:
+      - discovery
+      - gateway
+
+  ProductMS:
+    container_name: product
+    build: ./ProductMicroService
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
+    ports:
+      - "8082:8082"  # Corrected the port mapping
+    image: "product"
+    depends_on:
+      - discovery
+      - gateway
+   
+  gateway:
+    container_name: gateway
+    build: ./Gateway
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
+    ports:
+      - "8090:8090"   
+    image: "gateway"
+    depends_on:
+      - discovery
