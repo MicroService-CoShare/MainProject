@@ -32,6 +32,18 @@ services:
       - discovery
       - gateway
    
+  ForumMS:
+    container_name: forum
+    build: ./ForumMicroService
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
+    ports:
+      - "8080:8080"
+    image: "<none>"
+    depends_on:
+      - discovery
+      - gateway
+
   gateway:
     container_name: gateway
     build: ./Gateway
