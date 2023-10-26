@@ -48,21 +48,21 @@ services:
     depends_on:
       - discovery
       - gateway
-      
-    networks:
-      - backend
-  ContractMS:
-    container_name: contract
-    build: ./OfferMicroService
+  ReclamationMS:
+    container_name: Reclamation
+    build: ./ReclamationMicroService
     environment:
       - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
     ports:
-      "8071:8071"
-    image: "contractImage"
+      - "8060:8060"  
+    image: "reclamation"
     depends_on:
       - discovery
-      - gateway   
-        
+      - gateway 
+      
+    networks:
+      - backend
+          
   gateway:
     container_name: gateway
     build: ./Gateway
@@ -75,7 +75,7 @@ services:
       - backend
     depends_on:
       - discovery
-
+  
 networks:
   backend:
     driver: bridge
