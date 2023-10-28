@@ -13,7 +13,49 @@ services:
       - backend
     command:
       - start-dev
-
+  ReclamationMS:
+    container_name: Reclamation
+    build: ./ReclamationMicroService
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
+    ports:
+      - "8060:8060"  
+    image: "reclamation"
+    depends_on:
+      - discovery
+      - gateway
+      - keycloak    
+    networks:
+      - backend
+  ContractMS:
+    container_name: Contract
+    build: ./ContractMS
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
+    ports:
+      - "8071:8071"  
+    image: "contract"
+    depends_on:
+      - discovery
+      - gateway
+      - keycloak    
+    networks:
+      - backend 
+  ForumMS:
+    container_name: Forum
+    build: ./ForumMicroService
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
+    ports:
+      - "8099:8099"  
+    image: "forum"
+    depends_on:
+      - discovery
+      - gateway
+      - keycloak    
+    networks:
+      - backend 
+      
   discovery:
     container_name: discovery
     build: ./EurekaServer
@@ -48,21 +90,11 @@ services:
     depends_on:
       - discovery
       - gateway
-  ReclamationMS:
-    container_name: Reclamation
-    build: ./ReclamationMicroService
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://discovery:8761/eureka/
-    ports:
-      - "8060:8060"  
-    image: "reclamation"
-    depends_on:
-      - discovery
-      - gateway 
       
     networks:
       - backend
-          
+  
+        
   gateway:
     container_name: gateway
     build: ./Gateway
@@ -75,7 +107,26 @@ services:
       - backend
     depends_on:
       - discovery
-  
+  Mongo:
+    container_name: Mongo
+    image: "mongo:5-focal"
+    ports:
+      - "27017:27017"
+    depends_on:
+      - discovery
+    networks:
+      - backend
+
+  api:
+    build: ./MicroServiceNodeJs
+    ports:
+      # local->container
+      - 3005:3005
+    depends_on: 
+      - Mongo
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge
